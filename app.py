@@ -1,6 +1,9 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import os
+import datetime
+
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 
@@ -16,9 +19,43 @@ db = SQLAlchemy(app)
 def hello_world():
     return "<p>Moo, World!</p>"
 
+# @app.route("/device_info", methods=["POST"])
+# def device_info():
+#     data = request.get_json()
+#     print("Data received:", data)
+#     return "OK"
+
 @app.route("/device_info", methods=["POST"])
-def device_info(data):
+def device_info():
+    data = request.get_json()
     print("Data received:", data)
+
+    # Extract data from JSON
+    name = data.get('name')
+    battery = data.get('battery', {})
+    plugged = battery.get('plugged')
+    percent = battery.get('percent')
+    time_left = battery.get('time_left')
+    user = data.get('user')
+
+    # Find or create cow entry
+    cow = Cow.query.filter_by(name=name).first()
+    if cow is None:
+        print('creating cow')
+        cow = Cow(name=name)
+
+    # Update cow entry with latest data
+    cow.last_reading_at = datetime.fromtimestamp(data.get('timestamp'))
+    cow.battery_plugged = plugged
+    cow.battery_percent = percent
+    cow.battery_remaining = time_left
+    cow.user = user
+
+    # Commit changes to the database
+    print("committing cow")
+    db.session.add(cow)
+    db.session.commit()
+
     return "OK"
 
 class Cow(db.Model):
@@ -32,4 +69,7 @@ class Cow(db.Model):
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+
     app.run(debug=True)

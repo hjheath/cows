@@ -16,7 +16,7 @@ def send_device_info(cow_name):
         "battery": battery_data,
         "user": current_user(),
     }
-    response = requests.post('http://localhost:5000/device_info', json=data)
+    response = requests.post('http://127.0.0.1:5000/device_info', json=data)
     print("Sending device data to server", data)
     if response.status_code == 200:
         print("Data sent successfully")

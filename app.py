@@ -1,7 +1,6 @@
-import os
 import datetime
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -24,17 +23,24 @@ def server_ascii_art():
     """
 
 
-@app.route("/hello_world")
+@app.route("/")
 def hello_world():
     return "Moo, World!"
 
 
-@app.route("/")
-def index():
+@app.route("/cows")
+def list_cows():
     cows = Cow.query.all()
-    print('index')
-    print(cows)
-    return "<p>Moo, World!</p>"
+    return jsonify([cow.serialize() for cow in cows])
+
+
+@app.route('/cows/<name>')
+def get_cow_by_name(name):
+    cow = Cow.query.filter_by(name=name).first()
+    if cow:
+        return jsonify(cow.serialize())
+    else:
+        return jsonify({'error': 'Cow not found'}), 404
 
 
 @app.route("/device_info", methods=["POST"])
@@ -85,6 +91,17 @@ class Cow(db.Model):
     battery_percent = db.Column(db.Integer, nullable=True)
     battery_remaining = db.Column(db.Integer, nullable=True)
     user = db.Column(db.String(100), nullable=True)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'last_reading_at': self.last_reading_at.isoformat(),
+            'battery_plugged': self.battery_plugged,
+            'battery_percent': self.battery_percent,
+            'battery_remaining': self.battery_remaining,
+            'user': self.user
+        }
 
     def __repr__(self):
         return "{} is the COW name and {} is my user".format(self.name, self.user)

@@ -1,19 +1,15 @@
 import argparse
 import time
 import subprocess
-import uuid
 
 import requests
 import schedule
 import psutil
 
-COW_UID = str(uuid.uuid4())
-
 
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
-        "cow_uuid": COW_UID,
         "name": cow_name,
         "battery": battery_data,
         "user": current_user(),
@@ -49,8 +45,8 @@ def current_user():
     return logged_in_user or None
 
 
-def cow():
-    cow = """
+def worker_ascii_art():
+    return """
              __n__n__
       .------`-\00/-'
      /  ##  ## (oo)
@@ -59,7 +55,6 @@ def cow():
        |||   |||
        Here I am!
     """
-    print(cow)
 
 
 if __name__ == "__main__":
@@ -72,7 +67,7 @@ if __name__ == "__main__":
 
     # Schedule the job to run once a minute
     schedule.every().second.do(send_device_info, cow_name=cow_name)
-    cow()
+    print(worker_ascii_art())
     print("Starting scheduler")
     while True:
         schedule.run_pending()

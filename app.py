@@ -50,6 +50,7 @@ def device_info():
 
     # Extract data from JSON
     name = data.get("name")
+    timestamp = data.get("time")
     battery = data.get("battery", {})
     plugged = battery.get("plugged")
     percent = battery.get("percent")
@@ -61,6 +62,7 @@ def device_info():
     if current_cow:
         print(f"{name} exists!")
         current_cow.name = name
+        current_cow.last_reading_at = datetime.datetime.fromtimestamp(timestamp)
         current_cow.battery_plugged = plugged
         current_cow.battery_percent = percent
         current_cow.battery_remaining = time_left
@@ -86,7 +88,7 @@ def device_info():
 class Cow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
-    last_reading_at = db.Column(db.DateTime, default=datetime.datetime.now())
+    last_reading_at = db.Column(db.DateTime)
     battery_plugged = db.Column(db.Boolean, nullable=True)
     battery_percent = db.Column(db.Integer, nullable=True)
     battery_remaining = db.Column(db.Integer, nullable=True)

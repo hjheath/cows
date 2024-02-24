@@ -11,6 +11,7 @@ def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
         "name": cow_name,
+        "time": time.time(),
         "battery": battery_data,
         "user": current_user(),
     }

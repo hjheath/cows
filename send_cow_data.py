@@ -7,7 +7,6 @@ import schedule
 import psutil
 
 
-
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
@@ -16,7 +15,7 @@ def send_device_info(cow_name):
         "battery": battery_data,
         "user": current_user(),
     }
-    response = requests.post('http://127.0.0.1:5000/device_info', json=data)
+    response = requests.post("http://127.0.0.1:5000/device_info", json=data)
     print("Sending device data to server", data)
     if response.status_code == 200:
         print("Data sent successfully")
@@ -24,19 +23,41 @@ def send_device_info(cow_name):
         print("API request failed")
         print(response.status_code, response.text)
 
+
 def get_battery_info():
     battery = psutil.sensors_battery()
     return {
         "plugged": battery.power_plugged,
         "percent": battery.percent,
-        "time_left": battery.secsleft if battery.secsleft != psutil.POWER_TIME_UNLIMITED else None,
+        "time_left": (
+            battery.secsleft
+            if battery.secsleft != psutil.POWER_TIME_UNLIMITED
+            else None
+        ),
     }
+
 
 def current_user():
     # Run the command to get the currently logged in user
-    result = subprocess.run(['/usr/bin/stat', '-f', '%Su', '/dev/console'], capture_output=True, text=True)
+    result = subprocess.run(
+        ["/usr/bin/stat", "-f", "%Su", "/dev/console"], capture_output=True, text=True
+    )
     logged_in_user = result.stdout.strip()
     return logged_in_user or None
+
+
+def cow():
+    cow = """
+             __n__n__
+      .------`-\00/-'
+     /  ##  ## (oo)
+    / \## __   ./
+       |//YY \|/
+       |||   |||
+       Here I am!
+    """
+    print(cow)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script to collect COW data")
@@ -48,7 +69,7 @@ if __name__ == "__main__":
 
     # Schedule the job to run once a minute
     schedule.every().second.do(send_device_info, cow_name=cow_name)
-
+    cow()
     print("Starting scheduler")
     while True:
         schedule.run_pending()

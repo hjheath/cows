@@ -16,6 +16,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = (
 session_options = {"autocommit": False, "autoflush": False}
 db = SQLAlchemy(app, session_options=session_options)
 
+from app import app
+
 
 def where_is_bessie():
     cow = """
@@ -44,6 +46,7 @@ def device_info():
     print("Data received:", data)
 
     # Extract data from JSON
+    cow_uuid = data.get("cow_uuid")
     name = data.get("name")
     battery = data.get("battery", {})
     plugged = battery.get("plugged")
@@ -51,12 +54,23 @@ def device_info():
     time_left = battery.get("time_left")
     user = data.get("user")
 
-    if Cow.query.filter_by(name=name).first():
+    current_cow = Cow.query.filter_by(cow_uuid=cow_uuid).first()
+
+    if current_cow:
         print(f"{name} exists!")
-        return "Already exists"
+        current_cow.name = name
+        current_cow.battery_plugged = plugged
+        current_cow.battery_percent = percent
+        current_cow.battery_remaining = time_left
+        current_cow.cow_uuid = cow_uuid
+        current_cow.user = user
+        db.session.commit()
+        where_is_bessie()
+        return f"Updated {name}"
 
     cow = Cow(
         name=name,
+        cow_uuid=cow_uuid,
         battery_plugged=plugged,
         battery_percent=percent,
         battery_remaining=time_left,
@@ -71,6 +85,7 @@ def device_info():
 
 class Cow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    cow_uuid = db.Column(db.String(100), nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False)
     last_reading_at = db.Column(db.DateTime, default=datetime.datetime.now())
     battery_plugged = db.Column(db.Boolean, nullable=True)
@@ -80,3 +95,8 @@ class Cow(db.Model):
 
     def __repr__(self):
         return "{} is the COW name and {} is my user".format(self.name, self.user)
+
+
+with app.app_context():
+    where_is_bessie()
+    db.create_all()

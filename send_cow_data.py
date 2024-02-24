@@ -1,16 +1,19 @@
 import argparse
 import time
 import subprocess
-from datetime import datetime
+import uuid
 
 import requests
 import schedule
 import psutil
 
+COW_UID = str(uuid.uuid4())
+
 
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
+        "cow_uuid": COW_UID,
         "name": cow_name,
         "battery": battery_data,
         "user": current_user(),

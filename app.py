@@ -46,43 +46,28 @@ def get_cow_by_name(name):
 @app.route("/cows/<name>", methods=["PUT"])
 def create_or_update_cow_by_name(name):
     data = request.get_json()
-    print("Data received:", data)
 
-    # Extract data from JSON
-    timestamp = data.get("time")
-    battery = data.get("battery", {})
-    plugged = battery.get("plugged")
-    percent = battery.get("percent")
-    time_left = battery.get("time_left")
-    user = data.get("user")
+    cow = Cow.query.filter_by(name=name).first()
+    new_record = False
+    if not cow:
+        print(f"{name} not found, creating new record")
+        new_record = True
+        cow = Cow(name=name)
 
-    current_cow = Cow.query.filter_by(name=name).first()
+    timestamp = data["timestamp"]
+    battery_data = data["battery"]
 
-    if current_cow:
-        print(f"{name} exists!")
-        current_cow.name = name
-        current_cow.last_reading_at = datetime.datetime.fromtimestamp(timestamp)
-        current_cow.battery_plugged = plugged
-        current_cow.battery_percent = percent
-        current_cow.battery_remaining = time_left
-        current_cow.user = user
-        db.session.commit()
-        print(server_ascii_art())
-        return f"Updated {name}"
+    cow.last_reading_at = datetime.datetime.fromtimestamp(timestamp)
+    cow.battery_plugged = battery_data["plugged"]
+    cow.battery_percent = battery_data["percent"]
+    cow.battery_remaining = battery_data["time_remaining"]
+    cow.user = data["username"]
 
-    print(f"Creating {name}")
-    cow = Cow(
-        name=name,
-        battery_plugged=plugged,
-        battery_percent=percent,
-        battery_remaining=time_left,
-        user=user,
-    )
-    print(f"saving {name}")
     db.session.add(cow)
     db.session.commit()
 
-    return "OK"
+    action = "created" if new_record else "updated"
+    return f"{action} {name}"
 
 
 class Cow(db.Model):
@@ -96,13 +81,13 @@ class Cow(db.Model):
 
     def serialize(self):
         return {
-            'id': self.id,
-            'name': self.name,
-            'last_reading_at': self.last_reading_at.isoformat(),
-            'battery_plugged': self.battery_plugged,
-            'battery_percent': self.battery_percent,
-            'battery_remaining': self.battery_remaining,
-            'user': self.user
+            "id": self.id,
+            "name": self.name,
+            "last_reading_at": self.last_reading_at.isoformat(),
+            "battery_plugged": self.battery_plugged,
+            "battery_percent": self.battery_percent,
+            "battery_remaining": self.battery_remaining,
+            "user": self.user
         }
 
     def __repr__(self):

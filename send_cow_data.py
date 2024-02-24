@@ -12,17 +12,15 @@ SERVER_URL = "http://127.0.0.1:5000"
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
-        "time": time.time(),
+        "timestamp": time.time(),
         "battery": battery_data,
-        "user": current_user(),
+        "username": current_user(),
     }
     response = requests.put(f"{SERVER_URL}/cows/{cow_name}", json=data)
-    print("Sending device data to server", data)
     if response.status_code == 200:
-        print("Data sent successfully")
-    else:
-        print("API request failed!")
         print(response.status_code, response.text)
+    else:
+        print("API request failed!", response.status_code, response.text)
 
 
 def get_battery_info():
@@ -30,7 +28,7 @@ def get_battery_info():
     return {
         "plugged": battery.power_plugged,
         "percent": battery.percent,
-        "time_left": (
+        "time_remaining": (
             battery.secsleft
             if battery.secsleft != psutil.POWER_TIME_UNLIMITED
             else None
@@ -66,11 +64,10 @@ if __name__ == "__main__":
     cow_name = args.name
 
     print(worker_ascii_art())
-    print("Name provided:", cow_name)
 
     # Schedule the job to run once a minute
     schedule.every().second.do(send_device_info, cow_name=cow_name)
-    print("Starting scheduler")
+    print(f"Starting scheduler for {cow_name}...")
     while True:
         schedule.run_pending()
         time.sleep(1)

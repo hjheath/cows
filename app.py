@@ -34,22 +34,21 @@ def list_cows():
     return jsonify([cow.serialize() for cow in cows])
 
 
-@app.route('/cows/<name>')
+@app.route("/cows/<name>")
 def get_cow_by_name(name):
     cow = Cow.query.filter_by(name=name).first()
     if cow:
         return jsonify(cow.serialize())
     else:
-        return jsonify({'error': 'Cow not found'}), 404
+        return jsonify({"error": "Cow not found"}), 404
 
 
-@app.route("/device_info", methods=["POST"])
-def device_info():
+@app.route("/cows/<name>", methods=["PUT"])
+def create_or_update_cow_by_name(name):
     data = request.get_json()
     print("Data received:", data)
 
     # Extract data from JSON
-    name = data.get("name")
     timestamp = data.get("time")
     battery = data.get("battery", {})
     plugged = battery.get("plugged")
@@ -71,6 +70,7 @@ def device_info():
         print(server_ascii_art())
         return f"Updated {name}"
 
+    print(f"Creating {name}")
     cow = Cow(
         name=name,
         battery_plugged=plugged,

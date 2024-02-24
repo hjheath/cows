@@ -14,6 +14,8 @@ This application consists of:
 * A python script that regularly sends data from a cow to the server
 * A flask web server that listens for cow data and saves them to a sqlite database
 
+## Developing the app
+
 Installing dependencies:
 `pip install -r requirements.txt`
 
@@ -33,3 +35,9 @@ flask shell
 >>> from app import db
 >>> db.drop_all()
 ```
+
+## JSON API
+
+List cows: GET /cows
+Get cow: GET /cows/<name>
+Update cow: PUT /cows/<name>

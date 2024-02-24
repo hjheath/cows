@@ -6,21 +6,22 @@ import requests
 import schedule
 import psutil
 
+SERVER_URL = "http://127.0.0.1:5000"
+
 
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
-        "name": cow_name,
         "time": time.time(),
         "battery": battery_data,
         "user": current_user(),
     }
-    response = requests.post("http://127.0.0.1:5000/device_info", json=data)
+    response = requests.put(f"{SERVER_URL}/cows/{cow_name}", json=data)
     print("Sending device data to server", data)
     if response.status_code == 200:
         print("Data sent successfully")
     else:
-        print("API request failed")
+        print("API request failed!")
         print(response.status_code, response.text)
 
 
@@ -62,13 +63,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script to collect COW data")
     parser.add_argument("name", help="The name of this cow, e.g. buttercup")
     args = parser.parse_args()
-
     cow_name = args.name
+
+    print(worker_ascii_art())
     print("Name provided:", cow_name)
 
     # Schedule the job to run once a minute
     schedule.every().second.do(send_device_info, cow_name=cow_name)
-    print(worker_ascii_art())
     print("Starting scheduler")
     while True:
         schedule.run_pending()

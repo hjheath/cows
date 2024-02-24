@@ -29,3 +29,7 @@ class Cow(db.Model):
     battery_percent = db.Column(db.Integer, nullable=True)
     battery_remaining = db.Column(db.Integer, nullable=True)
     user = db.Column(db.String(100), nullable=True)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

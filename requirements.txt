@@ -1,2 +1,5 @@
+requests
+psutil
+schedule
 flask
 flask_sqlalchemy

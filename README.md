@@ -1,8 +1,35 @@
 # cows
 NHS Hack Day 26 Project - Finding Computers on Wheels (cows)
 
-Getting started
 
-`export FLASK_APP=app`
-`export FLASK_ENV=development`
+             __n__n__
+      .------`-/-'
+     /  ##  ## (oo)
+    / \## __   ./
+       |//YY \|/
+       |||   |||
+     Where's Bessie?
+
+This application consists of:
+* A python script that regularly sends data from a cow to the server
+* A flask web server that listens for cow data and saves them to a sqlite database
+
+Installing dependencies:
+`pip install -r requirements.txt`
+
+Running the server:
 `flask --app app --debug run`
+
+Running the cow worker:
+`python send_cow_data.py`
+
+Connect to the database:
+`sqlite3 instance/cows.sqlite3`
+
+Reset the database:
+```sh
+flask shell
+
+>>> from app import db
+>>> db.drop_all()
+```

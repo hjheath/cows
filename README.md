@@ -21,7 +21,7 @@ Installing dependencies:
 `pip install -r requirements.txt`
 
 Running the server:
-`flask --app app --debug run`
+`flask run --debug`
 
 Running the cow worker:
 `python send_cow_data.py`

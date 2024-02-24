@@ -66,8 +66,8 @@ def create_or_update_cow_by_name(name):
     db.session.add(cow)
     db.session.commit()
 
-    action = "created" if new_record else "updated"
-    return f"{action} {name}"
+    status = 201 if new_record else 200
+    return jsonify(cow.serialize()), status
 
 
 class Cow(db.Model):

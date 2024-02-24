@@ -39,6 +39,6 @@ flask shell
 
 ## JSON API
 
-List cows: GET /cows
-Get cow: GET /cows/<name>
-Update cow: PUT /cows/<name>
+* List cows: `GET /cows`
+* Get cow: `GET /cows/<name>`
+* Update cow: `PUT /cows/<name>`

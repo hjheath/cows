@@ -13,6 +13,7 @@ NHS Hack Day 26 Project - Finding Computers on Wheels (cows)
 This application consists of:
 * A python script that regularly sends data from a cow to the server
 * A flask web server that listens for cow data and saves them to a sqlite database
+* A JSON API to serve the data (on the same flask server)
 
 ## Developing the app
 

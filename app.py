@@ -4,31 +4,38 @@ import datetime
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
+project_dir = os.path.dirname(os.path.abspath(__file__))
+database_file = "sqlite:///{}".format(os.path.join(project_dir, "cows.sqlite3"))
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 
-DATABASE = "./cows.sqlite3"
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    basedir, "cows.sqlite3"
-)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = (
     False  # Disable event system for performance
 )
-db = SQLAlchemy(app)
+session_options = {"autocommit": False, "autoflush": False}
+db = SQLAlchemy(app, session_options=session_options)
+
+
+def where_is_bessie():
+    cow = """
+             __n__n__
+      .------`-\00/-'
+     /  ##  ## (oo)
+    / \## __   ./
+       |//YY \|/
+       |||   |||
+     Where's Bessie?
+    """
+    print(cow)
 
 
 @app.route("/")
-def hello_world():
+def all_cows():
+    cows = Cow.query.all()
+    print(cows)
     return "<p>Moo, World!</p>"
-
-
-# @app.route("/device_info", methods=["POST"])
-# def device_info():
-#     data = request.get_json()
-#     print("Data received:", data)
-#     return "OK"
+    # return "OK"
 
 
 @app.route("/device_info", methods=["POST"])
@@ -44,26 +51,20 @@ def device_info():
     time_left = battery.get("time_left")
     user = data.get("user")
 
-    print(name, battery, plugged, percent, time_left, user)
-    cow()
+    if Cow.query.filter_by(name=name).first():
+        print(f"{name} exists!")
+        return "Already exists"
 
-    # Find or create cow entry
-    # cow = Cow.query.filter_by(name=name).first()
-    # if cow is None:
-    #     print("creating cow")
-    #     cow = Cow(name=name)
-
-    # # Update cow entry with latest data
-    # cow.last_reading_at = datetime.fromtimestamp(data.get("timestamp"))
-    # cow.battery_plugged = plugged
-    # cow.battery_percent = percent
-    # cow.battery_remaining = time_left
-    # cow.user = user
-
-    # Commit changes to the database
-    # print("committing cow")
-    # db.session.add(cow)
-    # db.session.commit()
+    cow = Cow(
+        name=name,
+        battery_plugged=plugged,
+        battery_percent=percent,
+        battery_remaining=time_left,
+        user=user,
+    )
+    print(f"saving {name}")
+    db.session.add(cow)
+    db.session.commit()
 
     return "OK"
 
@@ -71,28 +72,11 @@ def device_info():
 class Cow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    last_reading_at = db.Column(db.DateTime, nullable=True)
+    last_reading_at = db.Column(db.DateTime, default=datetime.datetime.now())
     battery_plugged = db.Column(db.Boolean, nullable=True)
     battery_percent = db.Column(db.Integer, nullable=True)
     battery_remaining = db.Column(db.Integer, nullable=True)
     user = db.Column(db.String(100), nullable=True)
 
-
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-
-    app.run(debug=True)
-
-
-def cow():
-    cow = """
-             __n__n__
-      .------`-\00/-'
-     /  ##  ## (oo)
-    / \## __   ./
-       |//YY \|/
-       |||   |||
-     Where's Bessie?
-    """
-    print(cow)
+    def __repr__(self):
+        return "{} is the COW name and {} is my user".format(self.name, self.user)

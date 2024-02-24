@@ -1,6 +1,7 @@
 import argparse
 import time
 import subprocess
+from datetime import datetime
 
 import requests
 import schedule
@@ -10,7 +11,6 @@ import psutil
 def send_device_info(cow_name):
     battery_data = get_battery_info()
     data = {
-        "timestamp": int(time.time()),  # Unix timestamp in seconds
         "name": cow_name,
         "battery": battery_data,
         "user": current_user(),

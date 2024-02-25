@@ -76,7 +76,8 @@ def create_or_update_cow_by_name(name):
     cow.last_reading_at = datetime.datetime.fromtimestamp(timestamp)
     cow.battery_plugged = battery_data["plugged"]
     cow.battery_percent = battery_data["percent"]
-    cow.battery_remaining = battery_data["time_remaining"]
+    if battery_data["time_remaining"] and battery_data["time_remaining"] > 0:
+        cow.battery_remaining = battery_data["time_remaining"]
     cow.user = data["username"]
 
     db.session.add(cow)

@@ -2,24 +2,27 @@
 {% block content %}
     <h1 class="text-3xl font-bold text-cow flex items-center justify-center py-5">Cows</h1>
     {% if cows|length > 0 %}
-        <div class="flex items-center justify-center">
-            {% for cow in cows %}
-            <div class="flex items-center py-10">
-                <img class="m-auto w-[108px] px-5" src="static/cow-icon.png">
-                <div>
-                    <strong>{{cow['name']}}</strong>
-                    {% if cow['battery_plugged'] %}
-                        <p>plugged in</p>
-                    {% else %}
-                        <p>Unplugged</p>
-                    {% endif %}
-                    <p>Battery: {{cow['battery_percent']}}%</p>
-                    <p>Time remaining: {{cow['battery_remaining']/3600|round(1)}} hours</p>
-                    <p>User: {{cow['user']}}</p>
-                </div>
+    <div class="items-center">
+        {% for cow in cows %}
+        <div class="flex items-center justify-center py-10 px-60">
+            <img class="h-[100px] px-5" src="static/cow-icon.png">
+            <div class="w-60">
+                <strong>{{cow['name']}}</strong>
+                {% if cow['battery_plugged'] %}
+                    <p>Plugged in</p>
+                {% else %}
+                    <p>Unplugged</p>
+                {% endif %}
+                <p>Battery: {{cow['battery_percent']}}%</p>
+                {% if cow['battery_remaining'] and cow['battery_remaining'] > 0 %}
+                    <p>Time remaining: {{ (cow['battery_remaining']/3600)|round(1) }} hours</p>
+                {% endif %}
+                <p>User: {{cow['user']}}</p>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
+    </div>
+
         <h5 class="text-center">There are {{cows|count}} COWs currently active on the ward.</h5>
     {% else %}
         <div class="m-auto flex items-center justify-center">

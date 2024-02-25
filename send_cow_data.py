@@ -18,7 +18,7 @@ def send_device_info(cow_name):
     }
     response = requests.put(f"{SERVER_URL}/cows/{cow_name}", json=data)
     if response.status_code in [200, 201]:
-        print(f"Sent data, response: {response.status_code}")
+        print(f"Sent data, response: {response.status_code}", data)
     else:
         print("API request failed!", response.status_code, response.text)
 

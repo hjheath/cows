@@ -1,4 +1,5 @@
 # cows
+
 NHS Hack Day 26 Project - Finding Computers on Wheels (cows)
 
 
@@ -11,6 +12,7 @@ NHS Hack Day 26 Project - Finding Computers on Wheels (cows)
      Where's Bessie?
 
 This application consists of:
+
 * A python script that regularly sends data from a cow to the server
 * A flask web server that listens for cow data and saves them to a sqlite database
 * A JSON API to serve the data (on the same flask server)
@@ -42,3 +44,6 @@ flask shell
 * List cows: `GET /cows`
 * Get cow: `GET /cows/<name>`
 * Update cow: `PUT /cows/<name>`
+
+![alt text](https://github.com/hjheath/cows/blob/branch/static/nhshacklogo.png)
+Runner up prize NHS Hack 2024 24/25 February

@@ -45,5 +45,6 @@ flask shell
 * Get cow: `GET /cows/<name>`
 * Update cow: `PUT /cows/<name>`
 
-![alt text](https://github.com/hjheath/cows/blob/main/static/nhshacklogo.png)
-Runner up prize NHS Hack 2024 24/25 February
+![alt text](https://github.com/hjheath/cows/blob/main/static/nhshacklogo.png) <br/>
+
+**Runner up prize NHS Hack 2024 24/25 February**

@@ -24,7 +24,7 @@ Running the server:
 `flask run --debug`
 
 Running the cow worker:
-`python send_cow_data.py`
+`python send_cow_data.py <cow_name>`
 
 Connect to the database:
 `sqlite3 instance/cows.sqlite3`

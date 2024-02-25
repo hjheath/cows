@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="text-3xl font-bold text-cow flex items-center justify-center py-5">Cows</h1>
+    {% if cows|length > 0 %}
+        <div class="flex items-center justify-center">
+            {% for cow in cows %}
+            <div class="flex items-center py-10">
+                <img class="m-auto w-[108px] px-5" src="static/cow-icon.png">
+                <div>
+                    <strong>{{cow['name']}}</strong>
+                    {% if cow['battery_plugged'] %}
+                        <p>plugged in</p>
+                    {% else %}
+                        <p>Unplugged</p>
+                    {% endif %}
+                    <p>Battery: {{cow['battery_percent']}}%</p>
+                    <p>Time remaining: {{cow['battery_remaining']/3600|round(1)}} hours</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="m-auto flex items-center justify-center">
+            <div class="flex items-center">
+                <img src="static/cow-image.jpg"/>
+            </div>
+        </div>
+        <div class="flex items-center justify-center">
+        <h1 class="text-cow">Bessie is nowhere to be found!</h1>
+        </div>
+    {% endif %}
+        
+{% endblock %}

@@ -1,10 +1,10 @@
 import datetime
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cows.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -31,7 +31,23 @@ def hello_world():
 @app.route("/cows")
 def list_cows():
     cows = Cow.query.all()
+    template = "cows.html"
+    return render_template(template_name_or_list=template, cows=cows)
+
+
+@app.route("/api/cows")
+def api_list_cows():
+    cows = Cow.query.all()
     return jsonify([cow.serialize() for cow in cows])
+
+
+@app.route("/api/cows/<name>")
+def api_get_cow_by_name(name):
+    cow = Cow.query.filter_by(name=name).first()
+    if cow:
+        return jsonify(cow.serialize())
+    else:
+        return jsonify({"error": "Cow not found"}), 404
 
 
 @app.route("/cows/<name>")
@@ -87,7 +103,7 @@ class Cow(db.Model):
             "battery_plugged": self.battery_plugged,
             "battery_percent": self.battery_percent,
             "battery_remaining": self.battery_remaining,
-            "user": self.user
+            "user": self.user,
         }
 
     def __repr__(self):

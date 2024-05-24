@@ -1,6 +1,6 @@
 # cows
 
-NHS Hack Day 26 Project - Finding Computers on Wheels (cows)
+NHS Hack Day 26 Project - [Finding Computers on Wheels (cows)](https://nhshackday.com/projects/26-london/cowbells)
 
 
              __n__n__
@@ -47,4 +47,4 @@ flask shell
 
 ![alt text](https://github.com/hjheath/cows/blob/main/static/nhshacklogo.png) <br/>
 
-**Runner up prize NHS Hack 2024 24/25 February**
+**Winner audience vote NHS Hack 2024 24/25 February**
